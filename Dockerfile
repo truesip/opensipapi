@@ -1,14 +1,14 @@
 FROM node:18-alpine
 
-# Install OpenSIP dependencies and other utilities
-RUN apk add --no-cache opensips curl
+# Install curl for health checks
+RUN apk add --no-cache curl
 
 # Create app directory
 WORKDIR /usr/src/app
 
 # Create non-root user for security
 RUN addgroup -g 1001 -S nodejs
-RUN adduser -S apiuser -u 1001
+RUN adduser -S apiuser -u 1001 -G nodejs
 
 # Copy package files
 COPY package*.json ./
