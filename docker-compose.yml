@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  api:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=${NODE_ENV:-production}
+      - PORT=${PORT:-3000}
+      - MONGODB_URI=${MONGODB_URI:-mongodb://mongo:27017/voiceapi}
+      - API_KEY=${API_KEY}
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+    depends_on:
+      mongo:
+        condition: service_healthy
+      opensips:
+        condition: service_started
+    restart: unless-stopped
+    volumes:
+      - uploads_data:/usr/src/app/uploads
+    networks:
+      - app-network
+
+  mongo:
+    image: mongo:6.0
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_DATABASE=voiceapi
+    volumes:
+      - mongodb_data:/data/db
+    restart: unless-stopped
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - app-network
+
+  opensips:
+    image: opensips/opensips:3.2
+    ports:
+      - "5060:5060/udp"
+      - "5060:5060/tcp"
+    volumes:
+      - ./config/opensips:/etc/opensips
+    restart: unless-stopped
+    networks:
+      - app-network
+
+volumes:
+  mongodb_data:
+  uploads_data:
+
+networks:
+  app-network:
+    driver: bridge
