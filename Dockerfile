@@ -14,7 +14,7 @@ RUN adduser -S apiuser -u 1001 -G nodejs
 COPY package*.json ./
 
 # Install dependencies as root, then change ownership
-RUN npm ci --only=production --verbose && npm cache clean --force
+RUN npm install --only=production --verbose && npm cache clean --force
 
 # Change ownership of node_modules to apiuser
 RUN chown -R apiuser:nodejs node_modules
