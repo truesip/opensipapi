@@ -10,11 +10,14 @@ WORKDIR /usr/src/app
 RUN addgroup -g 1001 -S nodejs
 RUN adduser -S apiuser -u 1001 -G nodejs
 
-# Copy package files
+# Copy package files first (for better layer caching)
 COPY package*.json ./
 
-# Install dependencies
-RUN npm ci --only=production && npm cache clean --force
+# Install dependencies as root, then change ownership
+RUN npm ci --only=production --verbose && npm cache clean --force
+
+# Change ownership of node_modules to apiuser
+RUN chown -R apiuser:nodejs node_modules
 
 # Copy source code
 COPY . .

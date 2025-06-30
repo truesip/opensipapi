@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "description": "OpenSIP API with Google TTS integration",
   "main": "src/app.js",
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
   "scripts": {
     "start": "node src/app.js",
     "dev": "nodemon src/app.js",
