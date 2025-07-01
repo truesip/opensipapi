@@ -15,7 +15,15 @@ const app = express();
 
 // Middleware
 app.use(helmet());
-app.use(cors());
+// CORS configuration
+const corsOptions = {
+  origin: '*', // Allow all origins - modify this in production to specific domain
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-API-Key'],
+  credentials: true
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 
 // Database connection
